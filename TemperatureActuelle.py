@@ -39,7 +39,7 @@ def xmldescription(url):
 N = 0
 while N < 23:
 
-    fc = r"D:\Projets\MeteoPython\BD_Meteo.gdb\SationsMeteoQuebec" # Classe d'entités où se trouve l'information.
+    fc = r"D:\GIT\Cartedetemperature_Python\BD_Meteo.gdb\SationsMeteoQuebec" # Classe d'entités où se trouve l'information.
     fields = ('ville', 'url', 'Temperature') # Les champs à lire.
 
     with arcpy.da.UpdateCursor(fc, fields) as cursor: # Initialisation du curseur.
@@ -49,13 +49,13 @@ while N < 23:
             cursor.updateRow(row) # Mise à jour du champ de température de la classe d'entités.
 
     if arcpy.CheckOutExtension("Spatial") =="CheckedOut": # Vérification si le module Spatial Analyst est activé.
-        arcpy.env.workspace = r"D:\Projets\MeteoPython\BD_Meteo.gdb" # Définition de l'espace de travail pour les commandes suivantes.
+        arcpy.env.workspace = r"D:\GIT\Cartedetemperature_Python\BD_Meteo.gdb" # Définition de l'espace de travail pour les commandes suivantes.
         arcpy.MakeFeatureLayer_management(fc, "PointsMeteo_lyr", '"Temperature" > -9999') # Enlève les -9999 via une requête de définition pour l'interpolation.
         OutIMG = arcpy.sa.Idw("PointsMeteo_lyr", "Temperature","","","VARIABLE 8", "limits") # Interpolation IDW des valeurs de température.
         arcpy.env.overwriteOutput = 1 # Écrase le fichier s'il existe
         arcpy.Clip_management(OutIMG, "-8881010.42143521 5620161.08275039 -6356953.62302241 9003041.17894863", "IDWTemperature", "ProvinceQc","-3.402823e+038","ClippingGeometry","NO_MAINTAIN_EXTENT") # Clip selon la Province.
 
-    mxd = arcpy.mapping.MapDocument(r"D:\Projets\MeteoPython\meteo.mxd") # Définition du mxd.
+    mxd = arcpy.mapping.MapDocument(r"D:\GIT\Cartedetemperature_Python\meteo.mxd") # Définition du mxd.
     #arcpy.mapping.ExportToPDF(mxd, "c:\\temp\\Meteo.pdf") # Export en PDF
     arcpy.mapping.ExportToJPEG(mxd, "C:\\Users\\mcouture\\Dropbox\\CarteMétéoPQ\\IMG" + str(N) + "_" + time.strftime('%H') + "h.jpg")
     arcpy.Delete_management(OutIMG) # Efface l'image de l'interpolation.
